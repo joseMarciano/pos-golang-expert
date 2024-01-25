@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 )
@@ -36,6 +37,13 @@ func main() {
 		panic(err)
 	}
 
+	prod, err := selectOneProduct(db, product.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Product found", prod)
+
 	defer db.Close()
 }
 
@@ -67,4 +75,16 @@ func updateProduct(db *sql.DB, product *Product) error {
 	}
 
 	return nil
+}
+
+func selectOneProduct(db *sql.DB, id string) (*Product, error) {
+	var product Product
+
+	row := db.QueryRow("SELECT id, name, price FROM products WHERE id = ?", id)
+	err := row.Scan(&product.ID, &product.Name, &product.Price) // passsing memory address to populate props
+	if err != nil {
+		return nil, err
+	}
+
+	return &product, nil
 }
