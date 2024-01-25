@@ -51,6 +51,13 @@ func main() {
 
 	fmt.Println("Products found", products)
 
+	err = deleteProduct(db, product.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Product deleted")
+
 	defer db.Close()
 }
 
@@ -115,4 +122,19 @@ func selectAllProducts(db *sql.DB) ([]Product, error) {
 	}
 
 	return products, nil
+}
+
+func deleteProduct(db *sql.DB, id string) error {
+	stmt, err := db.Prepare("DELETE FROM products WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
