@@ -44,6 +44,13 @@ func main() {
 
 	fmt.Println("Product found", prod)
 
+	products, err := selectAllProducts(db)
+	if err != nil {
+		return
+	}
+
+	fmt.Println("Products found", products)
+
 	defer db.Close()
 }
 
@@ -87,4 +94,25 @@ func selectOneProduct(db *sql.DB, id string) (*Product, error) {
 	}
 
 	return &product, nil
+}
+
+func selectAllProducts(db *sql.DB) ([]Product, error) {
+	var products []Product
+
+	rows, err := db.Query("SELECT id, name, price FROM products")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var product Product
+		err := rows.Scan(&product.ID, &product.Name, &product.Price)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
 }
