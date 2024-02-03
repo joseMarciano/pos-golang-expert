@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"github.com/devfullcycle/goexpert/packaging/1/math"
+	"log"
+)
 
 func main() {
-	fmt.Println("Hello")
+	m := math.Math{
+		A: 10,
+		B: 20,
+	}
+	log.Printf("Math lib was imported succesfully:  %v", m.Add())
 }
