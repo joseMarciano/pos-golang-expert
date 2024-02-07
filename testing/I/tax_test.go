@@ -60,3 +60,26 @@ func BenchmarkCalculateTax(b *testing.B) {
 		index++
 	}
 }
+
+// go test -fuzz=.
+func FuzzCalculateTax(f *testing.F) {
+	testcases := []float64{
+		-10.0,
+		500.0,
+		1000.0,
+		1500.0,
+		2000.0,
+	}
+
+	for _, tc := range testcases {
+		f.Add(tc)
+	}
+	f.Fuzz(func(t *testing.T, amount float64) {
+		result := CalculateTax(amount)
+
+		if amount <= 0 && result != 0 {
+			t.Errorf("result %f want %f", result, 0.0)
+		}
+
+	})
+}
