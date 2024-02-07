@@ -2,6 +2,8 @@ package tax
 
 // go test .
 // go test -v
+// go test -coverprofile=coverage.out to see code coverage
+// go test -html=coverage.out to see code coverage
 import "testing"
 
 func TestCalculateTax(t *testing.T) {
