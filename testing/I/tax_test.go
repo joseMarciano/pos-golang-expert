@@ -35,3 +35,28 @@ func TestCalculateTaxBatch(t *testing.T) {
 		}
 	}
 }
+
+// go test -bench=.
+func BenchmarkCalculateTax(b *testing.B) {
+	type calcTax struct {
+		amount, expectedTax float64
+	}
+
+	table := []calcTax{
+		{amount: 500.0, expectedTax: 5.0},
+		{amount: 1000.0, expectedTax: 10.0},
+		{amount: 1500.0, expectedTax: 10.0},
+	}
+
+	index := 0
+	for i := 0; i < b.N; i++ {
+		item := table[index]
+		CalculateTax(item.amount)
+
+		if index > 2 {
+			index = 0
+		}
+
+		index++
+	}
+}
