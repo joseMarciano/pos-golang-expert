@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	// go run file-server.go
+	// go run file-serverconfig.go
 	pwd, _ := filepath.Abs("./public")
 	log.Println(pwd)
 	fileServer := http.FileServer(http.Dir(pwd))
