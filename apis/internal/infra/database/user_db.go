@@ -19,6 +19,14 @@ func (u *UserDB) Create(user *user.User) error {
 	return u.DB.Create(user).Error
 }
 
+func (u *UserDB) GetUser(id string) (*user.User, error) {
+	var user user.User
+	if err := u.DB.First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (u *UserDB) FindByEmail(email string) (*user.User, error) {
 	var user user.User
 	if err := u.DB.Where("email = ?", email).First(&user).Error; err != nil {
