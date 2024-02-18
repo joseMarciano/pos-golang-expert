@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joseMarciano/pos-golang-expert/apis/internal/entity/product"
 	"github.com/joseMarciano/pos-golang-expert/apis/internal/entity/user"
 	"github.com/joseMarciano/pos-golang-expert/apis/internal/infra/database"
@@ -27,7 +29,10 @@ func main() {
 	db.AutoMigrate(&user.User{}, &product.Product{})
 	productDB := database.NewProductDB(db)
 	productHandler := handlers.NewProductHandler(productDB)
-	http.HandleFunc("/products", productHandler.CreateProduct)
-	http.ListenAndServe(":8080", nil)
+
+	r := chi.NewRouter()
+	r.Use(middleware.Logger) // add a Logger Middleware
+	r.Post("/products", productHandler.CreateProduct)
+	http.ListenAndServe(":8080", r)
 
 }
