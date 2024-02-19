@@ -8,6 +8,7 @@ import (
 type UserInterface interface {
 	GetUser(id string) (*user.User, error)
 	FindByEmail(email string) (*user.User, error)
+	Create(user *user.User) error
 }
 
 type ProductInterface interface {
