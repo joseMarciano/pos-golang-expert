@@ -39,7 +39,9 @@ func main() {
 	userHandler := handlers.NewUserHandler(userDB, auth, authConfiguration.JwtExpiresIn())
 
 	r := chi.NewRouter()
-	r.Use(middleware.Logger) // add a Logger Middleware
+	r.Use(middleware.Recoverer) // gracefull handle panic errors in my route
+	r.Use(middleware.Logger)    // add a Logger Middleware
+	r.Use(MyOwnMiddleware)      // using my own middleware
 
 	r.Route("/products", func(router chi.Router) {
 		router.Use(jwtauth.Verifier(auth)) // insert the token in the Context
@@ -55,4 +57,11 @@ func main() {
 	r.Post("/users/jwt", userHandler.GetJwt)
 	http.ListenAndServe(":8080", r)
 
+}
+
+func MyOwnMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		println("MyOwnMiddleware")
+		next.ServeHTTP(w, r)
+	})
 }
