@@ -8,7 +8,15 @@ var config *ApplicationAuthConfig
 
 type ApplicationAuthConfig struct {
 	jwtSecret    string
-	jwtExpiresIn string
+	jwtExpiresIn int
+}
+
+func (auth *ApplicationAuthConfig) JwtSecret() string {
+	return auth.jwtSecret
+}
+
+func (auth *ApplicationAuthConfig) JwtExpiresIn() int {
+	return auth.jwtExpiresIn
 }
 
 func GetAuthConfig() ApplicationAuthConfig {
@@ -24,7 +32,7 @@ func GetAuthConfig() ApplicationAuthConfig {
 
 	config = &ApplicationAuthConfig{
 		jwtSecret:    v.GetString("auth.jwt_secret"),
-		jwtExpiresIn: v.GetString("auth.jwt_expires_in"),
+		jwtExpiresIn: v.GetInt("auth.jwt_expires_in"),
 	}
 	return *config
 }

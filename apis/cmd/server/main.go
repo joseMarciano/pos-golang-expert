@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth"
+	"github.com/joseMarciano/pos-golang-expert/apis/configs/authconfig"
 	"github.com/joseMarciano/pos-golang-expert/apis/internal/entity/product"
 	"github.com/joseMarciano/pos-golang-expert/apis/internal/entity/user"
 	"github.com/joseMarciano/pos-golang-expert/apis/internal/infra/database"
@@ -21,6 +23,8 @@ func main() {
 	//fmt.Println(authconfig.GetAuthConfig())
 	//fmt.Println(serverconfig.GetServerConfig())
 
+	authConfiguration := authconfig.GetAuthConfig()
+
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -31,7 +35,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(productDB)
 
 	userDB := database.NewUserDB(db)
-	userHandler := handlers.NewUserHandler(userDB)
+	userHandler := handlers.NewUserHandler(userDB, jwtauth.New("HS256", []byte(authConfiguration.JwtSecret()), nil), authConfiguration.JwtExpiresIn())
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger) // add a Logger Middleware
@@ -41,7 +45,8 @@ func main() {
 	r.Put("/products/{id}", productHandler.UpdateProduct)
 	r.Delete("/products/{id}", productHandler.DeleteProduct)
 
-	r.Post("/user", userHandler.Create)
+	r.Post("/users", userHandler.Create)
+	r.Post("/users/jwt", userHandler.GetJwt)
 	http.ListenAndServe(":8080", r)
 
 }
