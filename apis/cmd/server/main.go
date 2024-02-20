@@ -35,15 +35,21 @@ func main() {
 	productHandler := handlers.NewProductHandler(productDB)
 
 	userDB := database.NewUserDB(db)
-	userHandler := handlers.NewUserHandler(userDB, jwtauth.New("HS256", []byte(authConfiguration.JwtSecret()), nil), authConfiguration.JwtExpiresIn())
+	auth := jwtauth.New("HS256", []byte(authConfiguration.JwtSecret()), nil)
+	userHandler := handlers.NewUserHandler(userDB, auth, authConfiguration.JwtExpiresIn())
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger) // add a Logger Middleware
-	r.Get("/products", productHandler.ListProducts)
-	r.Post("/products", productHandler.CreateProduct)
-	r.Get("/products/{id}", productHandler.GetProduct)
-	r.Put("/products/{id}", productHandler.UpdateProduct)
-	r.Delete("/products/{id}", productHandler.DeleteProduct)
+
+	r.Route("/products", func(router chi.Router) {
+		router.Use(jwtauth.Verifier(auth)) // insert the token in the Context
+		router.Use(jwtauth.Authenticator)  // authenticate the use
+		router.Get("/", productHandler.ListProducts)
+		router.Post("/", productHandler.CreateProduct)
+		router.Get("/{id}", productHandler.GetProduct)
+		router.Put("/{id}", productHandler.UpdateProduct)
+		router.Delete("/{id}", productHandler.DeleteProduct)
+	})
 
 	r.Post("/users", userHandler.Create)
 	r.Post("/users/jwt", userHandler.GetJwt)

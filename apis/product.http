@@ -8,7 +8,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/products?page=0&limit=10&sort=id HTTP/1.1
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDgzOTYxNjUsInN1YiI6IjYzYmMwNWU4LWRhZGYtNGFhZi04M2NlLWE4YTE1YjI2MjZkMSJ9.sZgPvv_UKJMIgRbouG6WblEag-kDnXxwdJTjEZr2OmI
 
 ###
 
