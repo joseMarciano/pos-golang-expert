@@ -16,6 +16,10 @@ type UserHandler struct {
 	JwtExpiresIn int
 }
 
+type Error struct {
+	Error string `json:"error"`
+}
+
 func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExpiresIn int) *UserHandler {
 	return &UserHandler{
 		UserDB:       db,
@@ -57,6 +61,16 @@ func (h *UserHandler) GetJwt(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// Create user godoc
+// @Summary      Create user
+// @Description  Create user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.CreateUserInput  true  "user request"
+// @Success      201  {object}  user.User
+// @Failure      500  {object}  Error
+// @Router       /users [post]
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var usr dto.CreateUserInput
 	err := json.NewDecoder(r.Body).Decode(&usr)
