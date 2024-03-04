@@ -100,6 +100,19 @@ func (suite *EventDispatcherTestSuit) TestClear_ShouldClear() {
 	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
 }
 
+func (suite *EventDispatcherTestSuit) TestHas_ShouldWorkFine() {
+	err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.Nil(err)
+	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+
+	hasEvent := suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler)
+	assert.True(suite.T(), hasEvent)
+
+	suite.eventDispatcher.Clear()
+	hasEvent = suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler)
+	assert.False(suite.T(), hasEvent)
+}
+
 func TestSuite(t *testing.T) { // run this and all test inside the suite will run
 	suite.Run(t, new(EventDispatcherTestSuit))
 }
