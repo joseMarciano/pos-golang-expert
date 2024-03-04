@@ -3,6 +3,7 @@ package event_dispatcher
 import (
 	"github.com/devfullcycle/fcutils/pkg"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
@@ -20,7 +21,7 @@ func (te *TestEvent) GetPayload() interface{} {
 	return te.Payload
 }
 
-func (te *TestEvent) GetDatetime() time.Time {
+func (te *TestEvent) GetDateTime() time.Time {
 	return time.Now()
 }
 
@@ -111,6 +112,41 @@ func (suite *EventDispatcherTestSuit) TestHas_ShouldWorkFine() {
 	suite.eventDispatcher.Clear()
 	hasEvent = suite.eventDispatcher.Has(suite.event.GetName(), &suite.handler)
 	assert.False(suite.T(), hasEvent)
+}
+
+type MockHandler struct {
+	mock.Mock
+}
+
+func (m *MockHandler) Handle(event pkg.EventInterface) {
+	m.Called(event)
+}
+
+func (suite *EventDispatcherTestSuit) TestDispatch_ShouldDispatch() {
+	eventHandler := &MockHandler{}
+	eventHandler.On("Handle", &suite.event)
+	suite.eventDispatcher.Register(suite.event.GetName(), eventHandler)
+	suite.eventDispatcher.Dispatch(&suite.event)
+	eventHandler.AssertExpectations(suite.T())
+	eventHandler.AssertNumberOfCalls(suite.T(), "Handle", 1)
+	//err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	//suite.Nil(err)
+	//suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+	//
+	//err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler2)
+	//suite.Nil(err)
+	//suite.Equal(2, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+	//
+	//err = suite.eventDispatcher.Register(suite.event2.GetName(), &suite.handler3)
+	//suite.Nil(err)
+	//suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event2.GetName()]))
+	//
+	//suite.eventDispatcher.Dispatch(&suite.event)
+	//suite.eventDispatcher.Dispatch(&suite.event2)
+	//
+	//assert.Equal(suite.T(), 1, suite.handler.ID)
+	//assert.Equal(suite.T(), 1, suite.handler2.ID)
+	//assert.Equal(suite.T
 }
 
 func TestSuite(t *testing.T) { // run this and all test inside the suite will run
