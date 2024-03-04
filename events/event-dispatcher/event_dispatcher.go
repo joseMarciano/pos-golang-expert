@@ -3,6 +3,7 @@ package event_dispatcher
 import (
 	"errors"
 	"github.com/devfullcycle/fcutils/pkg"
+	"sync"
 )
 
 type EventDispatcher struct {
@@ -17,9 +18,12 @@ func NewEventDispatcher() *EventDispatcher {
 
 func (e *EventDispatcher) Dispatch(event pkg.EventInterface) error {
 	if handlers, ok := e.handlers[event.GetName()]; ok {
+		wg := sync.WaitGroup{}
 		for _, handler := range handlers {
-			handler.Handle(event)
+			wg.Add(1)
+			go handler.Handle(event, &wg)
 		}
+		wg.Wait() // wait here until all handlers done
 	}
 
 	return nil

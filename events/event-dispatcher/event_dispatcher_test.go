@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"sync"
 	"testing"
 	"time"
 )
@@ -29,7 +30,7 @@ type TestEventHandler struct {
 	ID int
 }
 
-func (th *TestEventHandler) Handle(event pkg.EventInterface) {
+func (th *TestEventHandler) Handle(event pkg.EventInterface, s *sync.WaitGroup) {
 }
 
 type EventDispatcherTestSuit struct {
@@ -118,8 +119,9 @@ type MockHandler struct {
 	mock.Mock
 }
 
-func (m *MockHandler) Handle(event pkg.EventInterface) {
+func (m *MockHandler) Handle(event pkg.EventInterface, wg *sync.WaitGroup) {
 	m.Called(event)
+	wg.Done()
 }
 
 func (suite *EventDispatcherTestSuit) TestDispatch_ShouldDispatch() {
