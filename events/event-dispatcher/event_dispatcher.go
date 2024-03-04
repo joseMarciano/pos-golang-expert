@@ -56,3 +56,17 @@ func (e *EventDispatcher) Has(eventName string, handler pkg.EventHandlerInterfac
 
 	return false
 }
+
+func (e *EventDispatcher) Remove(eventName string, handler pkg.EventHandlerInterface) error {
+	if _, ok := e.handlers[eventName]; ok {
+		for i, h := range e.handlers[eventName] {
+			if h == handler {
+				e.handlers[eventName] = append(e.handlers[eventName][:i], e.handlers[eventName][i+1:]...)
+				return nil
+			}
+		}
+	}
+
+	return nil
+
+}
