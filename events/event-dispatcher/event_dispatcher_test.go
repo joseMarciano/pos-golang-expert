@@ -76,6 +76,15 @@ func (suite *EventDispatcherTestSuit) TestEventDispatcher_Register_ShouldAddHand
 	assert.Equal(suite.T(), &suite.handler, suite.eventDispatcher.handlers[suite.event.GetName()][0])
 	assert.Equal(suite.T(), &suite.handler2, suite.eventDispatcher.handlers[suite.event.GetName()][1])
 }
+func (suite *EventDispatcherTestSuit) TestEventDispatcher_Register_ShouldReturnError() {
+	err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.Nil(err)
+	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+
+	err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.NotNil(err)
+	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+}
 
 func TestSuite(t *testing.T) { // run this and all test inside the suite will run
 	suite.Run(t, new(EventDispatcherTestSuit))
