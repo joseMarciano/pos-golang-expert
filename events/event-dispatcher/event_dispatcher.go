@@ -29,3 +29,8 @@ func (e *EventDispatcher) Register(eventName string, handler pkg.EventHandlerInt
 
 	return nil
 }
+
+func (e *EventDispatcher) Clear() error {
+	e.handlers = make(map[string][]pkg.EventHandlerInterface)
+	return nil
+}

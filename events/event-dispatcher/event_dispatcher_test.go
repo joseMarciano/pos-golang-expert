@@ -86,6 +86,20 @@ func (suite *EventDispatcherTestSuit) TestEventDispatcher_Register_ShouldReturnE
 	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
 }
 
+func (suite *EventDispatcherTestSuit) TestClear_ShouldClear() {
+
+	err := suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler)
+	suite.Nil(err)
+	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+
+	suite.eventDispatcher.Clear()
+	suite.Equal(0, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+
+	err = suite.eventDispatcher.Register(suite.event.GetName(), &suite.handler2)
+	suite.Nil(err)
+	suite.Equal(1, len(suite.eventDispatcher.handlers[suite.event.GetName()]))
+}
+
 func TestSuite(t *testing.T) { // run this and all test inside the suite will run
 	suite.Run(t, new(EventDispatcherTestSuit))
 }
