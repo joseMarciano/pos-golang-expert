@@ -1,0 +1,10 @@
+FROM golang:1.22.1 as builder
+WORKDIR /app
+COPY . .
+
+RUN GOOS=linux CGO_ENABLED=0 go build -o web_server .
+
+
+FROM scratch
+COPY --from=builder /app/web_server .
+CMD ["./web_server"]
